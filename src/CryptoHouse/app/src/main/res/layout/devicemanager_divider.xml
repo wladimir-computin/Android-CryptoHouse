@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="5dp"
+    android:layout_marginVertical="5dp"
+    android:background="#323232"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#1AFFFFFF">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/name_edittext"
+            android:layout_marginStart="5dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/delete_button"
+            android:ems="3"
+            android:textColor="#ffdd00"
+            android:text="Trenner-Name"
+            android:hint="@string/name"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/delete_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toLeftOf="@id/clone_button"
+            android:background="@android:drawable/ic_menu_delete"
+            android:backgroundTint="#FF0000"
+            android:backgroundTintMode="multiply" />
+
+        <Button
+            android:id="@+id/clone_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toLeftOf="@id/drag_image"
+            android:background="@drawable/ic_baseline_content_copy_24"
+            android:backgroundTint="@color/colorAccent"
+            android:backgroundTintMode="multiply" />
+
+        <ImageView
+            android:id="@+id/drag_image"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/ic_baseline_drag_handle_24" />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingTop="5dp">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:text="@string/divider"
+            android:textSize="16sp"
+            app:autoSizeTextType="none" />
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+    </LinearLayout>
+
+</LinearLayout>

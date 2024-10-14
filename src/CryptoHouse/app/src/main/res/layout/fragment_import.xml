@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:weightSum="3">
+
+        <TextView
+            android:id="@+id/import_filepath_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:autoSizeTextType="uniform"
+            android:gravity="start|center_vertical"
+            android:maxLines="2"
+            android:text="@string/select_file"
+            android:typeface="monospace" />
+
+        <Button
+            android:id="@+id/import_browse_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="2"
+            android:foreground="@drawable/outline_file_open_24"
+            android:foregroundGravity="center" />
+    </LinearLayout>
+
+    <Spinner
+        android:id="@+id/import_profile_mode_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:entries="@array/profile_import_modes"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/import_status_text"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Main, Second, ..."
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <CheckBox
+        android:id="@+id/import_overwrite_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/import_overwrite"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/import_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="@string/import_settings" />
+
+</LinearLayout>

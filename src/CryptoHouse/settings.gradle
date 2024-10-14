@@ -1,0 +1,3 @@
+include ':libcryptoiot'
+include ':app'
+rootProject.name = "CryptoHouse"

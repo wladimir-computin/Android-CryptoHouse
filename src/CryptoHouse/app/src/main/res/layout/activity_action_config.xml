@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".devicesettings.DeviceSettingsActivity_old"
+    android:orientation="vertical">
+
+    <include
+        layout="@layout/toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal|top"
+        android:fitsSystemWindows="true"
+        android:gravity="center|center_horizontal"
+        android:minWidth="55dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/name"
+            android:padding="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/action_name_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:inputType="textPersonName"
+                android:textColor="@android:color/white"
+                android:textSize="24sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <TextView
+            android:id="@+id/actions_devices_hint"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:gravity="center"
+            android:maxLines="2"
+            android:padding="10dp"
+            android:text="@string/actions_devices_hint"
+            android:visibility="gone"
+            app:autoSizeTextType="uniform" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/action_config_recycleview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:requiresFadingEdge="vertical"
+            android:fadingEdgeLength="10dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

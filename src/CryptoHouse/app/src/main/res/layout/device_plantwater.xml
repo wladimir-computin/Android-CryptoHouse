@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FF1A1A1A"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include layout="@layout/device_header" />
+
+        <LinearLayout
+            android:id="@+id/genericDeviceView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:paddingVertical="5dp"
+                        android:paddingHorizontal="10dp">
+
+                        <SeekBar
+                            android:id="@+id/seekBar"
+                            style="@style/Widget.AppCompat.SeekBar.Discrete"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:max="3"
+                            android:padding="5dp"
+                            android:progress="0" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/none" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@string/manual" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@string/semi" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="right"
+                                android:text="@string/auto" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                    <de.wladimircomputin.cryptohouse.ui.SquareLayout
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:animateLayoutChanges="true"
+                        android:gravity="center">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="16dp"
+                                app:srcCompat="@drawable/baseline_water_drop_24" />
+
+                            <ProgressBar
+                                android:id="@+id/waterGlassProgress"
+                                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:max="1000"
+                                android:padding="10dp"
+                                android:progress="600"
+                                android:progressDrawable="@drawable/circular_progressbar_small"
+                                android:rotation="-90"
+                                android:rotationY="-180" />
+                        </FrameLayout>
+                    </de.wladimircomputin.cryptohouse.ui.SquareLayout>
+
+                    <de.wladimircomputin.cryptohouse.ui.SquareLayout
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:animateLayoutChanges="true"
+                        android:gravity="center">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="16dp"
+                                app:srcCompat="@drawable/baseline_water_24" />
+
+                            <ProgressBar
+                                android:id="@+id/waterProgress"
+                                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:max="1000"
+                                android:padding="10dp"
+                                android:progress="600"
+                                android:progressDrawable="@drawable/circular_progressbar_small"
+                                android:rotation="-90"
+                                android:rotationY="-180" />
+                        </FrameLayout>
+                    </de.wladimircomputin.cryptohouse.ui.SquareLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:padding="10dp">
+
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switch1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:switchPadding="10dp"
+                        android:paddingHorizontal="10dp"
+                        android:text="@string/off_on"
+                        app:switchMinWidth="75dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

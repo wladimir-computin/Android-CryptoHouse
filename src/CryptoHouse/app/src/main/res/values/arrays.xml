@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="devicetypes">
+        <item>CryptoGeneric</item>
+        <item>CryptoDimmer</item>
+        <item>CryptoDimmer2</item>
+        <item>CryptoDimmer4</item>
+        <item>CryptoGarage</item>
+        <item>CryptoRollo</item>
+        <item>CryptoTimer</item>
+        <item>PlugSwitch</item>
+        <item>CryptoSML</item>
+        <item>CryptoAC</item>
+        <item>CryptoAC-TCL</item>
+        <item>CryptoGeiger</item>
+        <item>UranLight</item>
+        <item>CryptoKamin</item>
+        <item>PlantWater</item>
+    </string-array>
+
+    <string-array name="wifimodes">
+        <item>AP</item>
+        <item>CLIENT</item>
+        <item>HYBRID</item>
+    </string-array>
+
+    <string-array name="cryptoac_energy_string">
+        <item>Turbo</item>
+        <item>100%</item>
+        <item>80%</item>
+        <item>60%</item>
+        <item>40%</item>
+    </string-array>
+
+    <string-array name="cryptoac_tcl_preset_string">
+        <item>None</item>
+        <item>Silent</item>
+        <item>Turbo</item>
+        <item>Eco</item>
+        <item>No-Freeze</item>
+    </string-array>
+
+    <string-array name="uranlight_modes">
+        <item>ON</item>
+        <item>RANDOM</item>
+        <item>WAVE</item>
+        <item>CIRCLE</item>
+    </string-array>
+
+    <string-array name="time_event_modes">
+        <item>TIME</item>
+        <item>SUNRISE</item>
+        <item>SUNSET</item>
+        <item>DISABLED</item>
+    </string-array>
+
+    <string-array name="profile_export_modes">
+        <item>All Profiles</item>
+        <item>Current Profile</item>
+        <item>Custom Selection</item>
+    </string-array>
+
+    <string-array name="profile_import_modes">
+        <item>All Profiles</item>
+        <item>Custom Selection</item>
+    </string-array>
+
+</resources>

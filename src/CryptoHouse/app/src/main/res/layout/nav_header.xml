@@ -1,0 +1,79 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout2"
+    android:layout_width="match_parent"
+    android:layout_height="128dp"
+    android:background="@drawable/header_bg"
+    android:orientation="horizontal"
+    android:paddingTop="30dp"
+    android:paddingBottom="0dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark"
+    android:weightSum="3">
+
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/nav_header_profile_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:civ_border_color="@android:color/white"
+        app:civ_border_width="2dp"
+        app:civ_circle_color="@color/colorPrimaryDark"
+        app:civ_shadow="true"
+        app:civ_shadow_color="@android:color/black"
+        app:civ_shadow_radius="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/guideline2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2"
+        app:srcCompat="@mipmap/ic_launcher" />
+
+    <TextView
+        android:id="@+id/nav_header_profile_text"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="Profile"
+        android:textColor="@android:color/white"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintLeft_toLeftOf="@id/nav_header_profile_image"
+        app:layout_constraintRight_toRightOf="@id/nav_header_profile_image"
+        app:layout_constraintTop_toBottomOf="@id/nav_header_profile_image" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.35" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:maxLines="1"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        android:text="@string/app_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@android:color/white"
+        android:gravity="right"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintLeft_toRightOf="@id/guideline2"
+        app:layout_constraintBottom_toTopOf="@id/nav_header_profile_expand"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/nav_header_profile_expand"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@drawable/ic_baseline_arrow_drop_down_24" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

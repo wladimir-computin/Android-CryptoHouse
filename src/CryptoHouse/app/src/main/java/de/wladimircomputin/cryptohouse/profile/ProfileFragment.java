@@ -1,0 +1,169 @@
+package de.wladimircomputin.cryptohouse.profile;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
+import com.mikhaellopez.circularimageview.CircularImageView;
+
+import org.json.JSONArray;
+
+import java.util.UUID;
+
+import de.wladimircomputin.cryptohouse.MainActivity;
+import de.wladimircomputin.cryptohouse.R;
+
+public class ProfileFragment extends Fragment {
+    CircularImageView profileImage;
+    EditText profileName;
+    Button profileDelete;
+    SharedPreferences sharedPrefs;
+
+    ProfileItem profileItem;
+
+    public ProfileFragment(){
+        this.profileItem = new ProfileItem(UUID.randomUUID().toString(), "", "");
+    }
+
+    public ProfileFragment(ProfileItem profileItem){
+        this.profileItem = profileItem;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        sharedPrefs = getContext().getSharedPreferences("de.wladimircomputin.cryptohouse.profiles", Context.MODE_PRIVATE);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.edit_profile);
+        setHasOptionsMenu(true);
+        profileImage = view.findViewById(R.id.profile_fragment_image);
+        profileName = view.findViewById(R.id.profile_fragment_name);
+        profileDelete = view.findViewById(R.id.profile_fragment_delete);
+        profileName.setText(profileItem.name);
+        profileDelete.setVisibility(View.VISIBLE);
+        profileDelete.setOnClickListener((v) -> {
+            new AlertDialog.Builder(getContext())
+                .setTitle(R.string.delete_profile)
+                .setMessage(R.string.delete_profile_question)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> {
+                    MainActivity activity = (MainActivity) getActivity();
+                    deleteProfile();
+                    activity.loadProfiles();
+                    activity.switchProfile(activity.getCurrentProfile());
+                    activity.switchFragment(R.id.nav_devicecontrols);
+                })
+                .setNegativeButton(android.R.string.no, null).show();
+        });
+
+
+        return view;
+    }
+
+    public void deleteProfile(){
+        try {
+            if(profileItem != null) {
+                String profilejson = sharedPrefs.getString("profiles", "");
+                JSONArray arr;
+                arr = new JSONArray(profilejson);
+                for (int i = 0; i < arr.length(); i++) {
+                    ProfileItem p = new ProfileItem(arr.getJSONObject(i));
+                    if (p.equals(profileItem)) {
+                        arr.remove(i);
+                        sharedPrefs.edit().putString("profiles", arr.toString()).apply();
+                        break;
+                    }
+                }
+            }
+            SharedPreferences sharedPref2 = getContext().getSharedPreferences("devices", Context.MODE_PRIVATE);
+            sharedPref2.edit().remove(profileItem.id).apply();
+
+            sharedPref2 = getContext().getSharedPreferences("actions", Context.MODE_PRIVATE);
+            sharedPref2.edit().remove(profileItem.id).apply();
+        } catch (Exception x){}
+    }
+
+    public void saveProfile(){
+        profileItem.name = profileName.getText().toString();
+        try {
+            String profilejson = sharedPrefs.getString("profiles", "");
+            JSONArray arr;
+            arr = new JSONArray(profilejson);
+            boolean updated = false;
+            for (int i = 0; i < arr.length(); i++) {
+                ProfileItem p = new ProfileItem(arr.getJSONObject(i));
+                if (p.equals(profileItem)) {
+                    arr.getJSONObject(i).put("name", profileItem.name);
+                    //more
+                    updated = true;
+                    break;
+                }
+            }
+            if(!updated){
+                arr.put(profileItem.toJSON());
+            }
+            sharedPrefs.edit()
+                    .putString("profiles", arr.toString())
+                    .putString("current_profile", profileItem.id)
+                    .apply();
+        } catch (Exception x){}
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.options_profile, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // action with ID action_refresh was selected
+
+            case R.id.menu_apply:
+                apply();
+                break;
+
+            default:
+                break;
+        }
+        return true;
+    }
+
+    public void apply(){
+        hideSoftKeyboard();
+        MainActivity activity = (MainActivity) getActivity();
+        saveProfile();
+        activity.loadProfiles();
+        activity.switchProfile(profileItem);
+        activity.switchFragment(R.id.nav_devicecontrols);
+    }
+
+    private void hideSoftKeyboard(){
+        View view = getView().getRootView();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+}
