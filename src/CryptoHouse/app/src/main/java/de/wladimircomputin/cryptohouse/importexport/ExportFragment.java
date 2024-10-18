@@ -11,10 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -39,6 +35,7 @@ import java.util.List;
 
 import de.wladimircomputin.cryptohouse.MainActivity;
 import de.wladimircomputin.cryptohouse.R;
+import de.wladimircomputin.cryptohouse.databinding.FragmentExportBinding;
 import de.wladimircomputin.cryptohouse.profile.ProfileItem;
 import de.wladimircomputin.libcryptoiot.v2.protocol.Crypter;
 
@@ -48,11 +45,7 @@ public class ExportFragment extends Fragment implements FocusListener {
     List<ProfileItem> allProfiles;
     List<ProfileItem> profiles;
 
-    Spinner exportProfileModeSpinner;
-    EditText exportPasswordEditText;
-    TextView exportStatusText;
-    Button exportSaveAsButton;
-    Button exportShareButton;
+    FragmentExportBinding binding;
 
     ActivityResultLauncher<String> createDocumentLauncher;
 
@@ -71,7 +64,7 @@ public class ExportFragment extends Fragment implements FocusListener {
             if (uri != null) {
                 try {
                     OutputStream outputStream = getContext().getContentResolver().openOutputStream(uri);
-                    String out = exportSettingsAsString(exportPasswordEditText.getText().toString());
+                    String out = exportSettingsAsString(binding.exportPasswordEdittext.getText().toString());
                     outputStream.write(out.getBytes(StandardCharsets.UTF_8));
                     outputStream.close();
                 } catch (Exception x){}
@@ -83,18 +76,13 @@ public class ExportFragment extends Fragment implements FocusListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_export, container, false);
-        exportProfileModeSpinner = view.findViewById(R.id.export_profile_mode_spinner);
-        exportPasswordEditText = view.findViewById(R.id.export_password_edittext);
-        exportStatusText = view.findViewById(R.id.export_status_text);
-        exportSaveAsButton = view.findViewById(R.id.export_save_as_button);
-        exportShareButton = view.findViewById(R.id.export_share_button);
+        binding = FragmentExportBinding.inflate(inflater, container, false);
 
-        exportStatusText.setOnClickListener((v) -> {
+        binding.exportStatusText.setOnClickListener((v) -> {
             updateStatusText(2);
         });
 
-        exportProfileModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.exportProfileModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateStatusText(position);
@@ -106,18 +94,18 @@ public class ExportFragment extends Fragment implements FocusListener {
             }
         });
 
-        exportShareButton.setOnClickListener((v) -> {
+        binding.exportShareButton.setOnClickListener((v) -> {
             try {
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd-HHmmss");
                 Date date = new Date();
                 String filename = "cryptohouse_backup_" + formatter.format(date) + ".json";
-                String out = exportSettingsAsString(exportPasswordEditText.getText().toString());
+                String out = exportSettingsAsString(binding.exportPasswordEdittext.getText().toString());
                 File file = createTempFile(out, filename);
                 shareFile(file);
             } catch (Exception x){}
         });
 
-        exportSaveAsButton.setOnClickListener(v -> {
+        binding.exportSaveAsButton.setOnClickListener(v -> {
 
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd-HHmmss");
             Date date = new Date();
@@ -126,7 +114,7 @@ public class ExportFragment extends Fragment implements FocusListener {
             createDocumentLauncher.launch(filename);
         });
 
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -140,8 +128,8 @@ public class ExportFragment extends Fragment implements FocusListener {
     }
 
     private void updateStatusText(int position){
-        if(exportProfileModeSpinner.getSelectedItemPosition() != position){
-            exportProfileModeSpinner.setSelection(position);
+        if(binding.exportProfileModeSpinner.getSelectedItemPosition() != position){
+            binding.exportProfileModeSpinner.setSelection(position);
             return;
         }
 
@@ -151,7 +139,7 @@ public class ExportFragment extends Fragment implements FocusListener {
                 public void onFinish(List<ProfileItem> selectedItems) {
                     profiles.clear();
                     profiles.addAll(selectedItems);
-                    exportStatusText.setText(profilesToString(profiles));
+                    binding.exportStatusText.setText(profilesToString(profiles));
                 }
 
                 @Override
@@ -163,11 +151,11 @@ public class ExportFragment extends Fragment implements FocusListener {
             profiles.clear();
             MainActivity mainActivity = (MainActivity) getActivity();
             profiles.add(mainActivity.getCurrentProfile());
-            exportStatusText.setText(profilesToString(profiles));
+            binding.exportStatusText.setText(profilesToString(profiles));
         } else { //All profiles
             profiles.clear();
             profiles.addAll(allProfiles);
-            exportStatusText.setText(profilesToString(profiles));
+            binding.exportStatusText.setText(profilesToString(profiles));
         }
     }
 
@@ -330,7 +318,7 @@ public class ExportFragment extends Fragment implements FocusListener {
     }
 
     public JSONObject encryptSettings(JSONObject settings, String password) throws Exception{
-        Crypter crypter = new Crypter(exportPasswordEditText.getText().toString());
+        Crypter crypter = new Crypter(binding.exportPasswordEdittext.getText().toString());
         byte[] iv = crypter.getRandom(Crypter.AES_GCM_IV_LEN);
         byte[] encryptedMessageWithTag = crypter.encrypt(settings.toString().getBytes(StandardCharsets.UTF_8), iv);
         byte[] encrypted_message = new byte[encryptedMessageWithTag.length - Crypter.AES_GCM_TAG_LEN];

@@ -14,11 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -45,6 +41,7 @@ import java.util.regex.Pattern;
 import de.wladimircomputin.cryptohouse.MainActivity;
 import de.wladimircomputin.cryptohouse.R;
 import de.wladimircomputin.cryptohouse.actions.ActionItem;
+import de.wladimircomputin.cryptohouse.databinding.FragmentImportBinding;
 import de.wladimircomputin.cryptohouse.devicemanager.DeviceManagerDevice;
 import de.wladimircomputin.cryptohouse.profile.ProfileItem;
 import de.wladimircomputin.libcryptoiot.v2.protocol.Crypter;
@@ -55,12 +52,7 @@ public class ImportFragment extends Fragment implements FocusListener {
     List<ProfileItem> importedProfiles;
     List<ProfileItem> profiles;
 
-    TextView importFilepathText;
-    Button importBrowseButton;
-    Spinner importProfileModeSpinner;
-    CheckBox importOverwriteCheckbox;
-    TextView importStatusText;
-    Button importButton;
+    FragmentImportBinding binding;
 
     ActivityResultLauncher<String[]> openDocumentLauncher;
     JSONObject rawJsonSettings;
@@ -93,21 +85,15 @@ public class ImportFragment extends Fragment implements FocusListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_import, container, false);
-        importFilepathText = view.findViewById(R.id.import_filepath_text);
-        importBrowseButton = view.findViewById(R.id.import_browse_button);
-        importProfileModeSpinner = view.findViewById(R.id.import_profile_mode_spinner);
-        importStatusText = view.findViewById(R.id.import_status_text);
-        importOverwriteCheckbox = view.findViewById(R.id.import_overwrite_checkbox);
-        importButton = view.findViewById(R.id.import_button);
+        binding = FragmentImportBinding.inflate(inflater, container, false);
 
-        importStatusText.setOnClickListener((v) -> {
+        binding.importStatusText.setOnClickListener((v) -> {
             updateStatusText(1);
         });
 
-        importStatusText.setText("");
+        binding.importStatusText.setText("");
 
-        importProfileModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.importProfileModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateStatusText(position);
@@ -119,21 +105,21 @@ public class ImportFragment extends Fragment implements FocusListener {
             }
         });
 
-        importFilepathText.setOnClickListener((v) -> {
-            importBrowseButton.callOnClick();
+        binding.importFilepathText.setOnClickListener((v) -> {
+            binding.importBrowseButton.callOnClick();
         });
 
-        importBrowseButton.setOnClickListener((v) -> {
-            importButton.setEnabled(false);
-            importProfileModeSpinner.setVisibility(View.GONE);
-            importStatusText.setVisibility(View.GONE);
-            importOverwriteCheckbox.setVisibility(View.GONE);
+        binding.importBrowseButton.setOnClickListener((v) -> {
+            binding.importButton.setEnabled(false);
+            binding.importProfileModeSpinner.setVisibility(View.GONE);
+            binding.importStatusText.setVisibility(View.GONE);
+            binding.importOverwriteCheckbox.setVisibility(View.GONE);
             openDocumentLauncher.launch(new String[] {"application/json"});
         });
 
-        importButton.setOnClickListener((v) -> {
+        binding.importButton.setOnClickListener((v) -> {
             try {
-                if(importSettings(verifiedJsonSettings, importOverwriteCheckbox.isChecked())){
+                if(importSettings(verifiedJsonSettings, binding.importOverwriteCheckbox.isChecked())){
                     Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(getContext(), MainActivity.class);
@@ -150,7 +136,7 @@ public class ImportFragment extends Fragment implements FocusListener {
 
 
 
-        return view;
+        return binding.getRoot();
     }
 
     private void loadSettings(JSONObject settings){
@@ -159,10 +145,10 @@ public class ImportFragment extends Fragment implements FocusListener {
         new Handler().postDelayed(() -> {
             getActivity().runOnUiThread(new Runnable(){
                 public void run() {
-                    importButton.setEnabled(true);
-                    importProfileModeSpinner.setVisibility(View.VISIBLE);
-                    importStatusText.setVisibility(View.VISIBLE);
-                    importOverwriteCheckbox.setVisibility(View.VISIBLE);
+                    binding.importButton.setEnabled(true);
+                    binding.importProfileModeSpinner.setVisibility(View.VISIBLE);
+                    binding.importStatusText.setVisibility(View.VISIBLE);
+                    binding.importOverwriteCheckbox.setVisibility(View.VISIBLE);
                 }
             });
         }, 500);
@@ -212,8 +198,8 @@ public class ImportFragment extends Fragment implements FocusListener {
 
     private void updateStatusText(int position){
         if(verifiedJsonSettings != null) {
-            if(importProfileModeSpinner.getSelectedItemPosition() != position){
-                importProfileModeSpinner.setSelection(position);
+            if(binding.importProfileModeSpinner.getSelectedItemPosition() != position){
+                binding.importProfileModeSpinner.setSelection(position);
                 return;
             }
 
@@ -228,7 +214,7 @@ public class ImportFragment extends Fragment implements FocusListener {
                         profiles.clear();
                         profiles.addAll(selectedItems);
 
-                        importStatusText.setText(profilesToString(profiles));
+                        binding.importStatusText.setText(profilesToString(profiles));
                     }
 
                     @Override
@@ -240,7 +226,7 @@ public class ImportFragment extends Fragment implements FocusListener {
                 profiles.clear();
                 profiles.addAll(importedProfiles);
 
-                importStatusText.setText(profilesToString(profiles));
+                binding.importStatusText.setText(profilesToString(profiles));
             }
         }
     }

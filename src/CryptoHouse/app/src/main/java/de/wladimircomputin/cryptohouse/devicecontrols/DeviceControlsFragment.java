@@ -8,7 +8,6 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.json.JSONArray;
@@ -30,8 +28,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import de.wladimircomputin.cryptohouse.MainActivity;
-import de.wladimircomputin.cryptohouse.R;
 import de.wladimircomputin.cryptohouse.assistant.FocusListener;
+import de.wladimircomputin.cryptohouse.databinding.FragmentDevicecontrolsBinding;
 import de.wladimircomputin.cryptohouse.device.CryptoAC;
 import de.wladimircomputin.cryptohouse.device.CryptoAC_TCL;
 import de.wladimircomputin.cryptohouse.device.CryptoDimmer;
@@ -57,12 +55,11 @@ import de.wladimircomputin.libcryptoiot.v2.protocol.DiscoveryDevice;
 
 public class DeviceControlsFragment extends Fragment {
 
-    private ViewPager2 viewPager;
     private CustomPagerAdapter pagerAdapter;
 
     private List<DeviceControlsSubFragment> segmentFragments = new ArrayList<>();
 
-    TextView devicesControlsHint;
+    FragmentDevicecontrolsBinding binding;
     Timer updateTimer;
     Timer updateIPTimer;
     Map<String, ArrayList<ICryptoDevice>> devices = new LinkedHashMap<>();
@@ -74,10 +71,7 @@ public class DeviceControlsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_devicecontrols, container, false);
-        devicesControlsHint = view.findViewById(R.id.devices_controls_hint);
-        viewPager = view.findViewById(R.id.devices_controls_viewPager);
-        TabLayout tabLayout = view.findViewById(R.id.devices_controls_tabLayout);
+        binding = FragmentDevicecontrolsBinding.inflate(inflater, container, false);
 
         setHasOptionsMenu(true);
         //((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.app_name);
@@ -167,19 +161,19 @@ public class DeviceControlsFragment extends Fragment {
         }
 
         if (devices.isEmpty()) {
-            if (devicesControlsHint.getVisibility() != View.VISIBLE) {
-                devicesControlsHint.postDelayed(() -> {
-                    devicesControlsHint.setAlpha(0f);
-                    devicesControlsHint.setVisibility(View.VISIBLE);
-                    devicesControlsHint.animate().alpha(1f).setDuration(500);
+            if (binding.devicesControlsHint.getVisibility() != View.VISIBLE) {
+                binding.devicesControlsHint.postDelayed(() -> {
+                    binding.devicesControlsHint.setAlpha(0f);
+                    binding.devicesControlsHint.setVisibility(View.VISIBLE);
+                    binding.devicesControlsHint.animate().alpha(1f).setDuration(500);
                 }, 500);
             } else {
-                devicesControlsHint.setVisibility(View.GONE);
+                binding.devicesControlsHint.setVisibility(View.GONE);
             }
         }
         // Create and set up the adapter
         pagerAdapter = new CustomPagerAdapter(getChildFragmentManager(), getLifecycle(), segmentFragments);
-        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+        binding.devicesControlsViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
@@ -201,20 +195,20 @@ public class DeviceControlsFragment extends Fragment {
                 super.onPageScrollStateChanged(state);
             }
         });
-        viewPager.setOffscreenPageLimit(10);
-        viewPager.setAdapter(pagerAdapter);
+        binding.devicesControlsViewPager.setOffscreenPageLimit(10);
+        binding.devicesControlsViewPager.setAdapter(pagerAdapter);
 
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+        new TabLayoutMediator(binding.devicesControlsTabLayout, binding.devicesControlsViewPager, (tab, position) -> {
             tab.setText(((PagerAdapterTitleProvider) pagerAdapter).getTitle(position));
         }).attach();
 
         if(devices.size() < 2){
-            tabLayout.setVisibility(View.GONE);
+            binding.devicesControlsTabLayout.setVisibility(View.GONE);
         }
 
         pagerAdapter.notifyDataSetChanged();
 
-        return view;
+        return binding.getRoot();
     }
 
     @Override

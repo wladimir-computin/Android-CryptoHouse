@@ -11,12 +11,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,18 +29,18 @@ import java.util.UUID;
 
 import de.wladimircomputin.cryptohouse.MainActivity;
 import de.wladimircomputin.cryptohouse.R;
+import de.wladimircomputin.cryptohouse.databinding.FragmentDevicemanagerBinding;
 import de.wladimircomputin.libcryptoiot.v2.protocol.CryptCon;
 import de.wladimircomputin.libcryptoiot.v2.protocol.CryptConDiscoverReceiver;
 import de.wladimircomputin.libcryptoiot.v2.protocol.DiscoveryDevice;
 
 public class DeviceManagerFragment extends Fragment {
 
-    private Toolbar toolbar;
     private ItemTouchHelper mItemTouchHelper;
     SharedPreferences sharedPrefs;
     DeviceRecyclerListAdapter listAdapter;
-    RecyclerView recyclerView;
-    TextView devicesManagerHint;
+
+    FragmentDevicemanagerBinding binding;
 
     String current_profile;
 
@@ -54,10 +52,9 @@ public class DeviceManagerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_devicemanager, container, false);
+        binding = FragmentDevicemanagerBinding.inflate(inflater, container, false);
         setHasOptionsMenu(true);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.device_manager);
-        devicesManagerHint = view.findViewById(R.id.devices_manager_hint);
 
         MainActivity mainActivity = (MainActivity)getActivity();
         listAdapter = new DeviceRecyclerListAdapter(getContext(), viewHolder -> mItemTouchHelper.startDrag(viewHolder));
@@ -73,10 +70,9 @@ public class DeviceManagerFragment extends Fragment {
             }
         } catch (Exception x){}
 
-        recyclerView = view.findViewById(R.id.devices_recycler);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(listAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.devicesRecycler.setHasFixedSize(true);
+        binding.devicesRecycler.setAdapter(listAdapter);
+        binding.devicesRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         listAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -93,22 +89,22 @@ public class DeviceManagerFragment extends Fragment {
             @Override
             public void onChanged() {
                 super.onChanged();
-                if(listAdapter.list.isEmpty() && devicesManagerHint.getVisibility() != View.VISIBLE){
-                    devicesManagerHint.postDelayed(() -> {
-                        devicesManagerHint.setAlpha(0f);
-                        devicesManagerHint.setVisibility(View.VISIBLE);
-                        devicesManagerHint.animate().alpha(1f).setDuration(500);
+                if(listAdapter.list.isEmpty() && binding.devicesManagerHint.getVisibility() != View.VISIBLE){
+                    binding.devicesManagerHint.postDelayed(() -> {
+                        binding.devicesManagerHint.setAlpha(0f);
+                        binding.devicesManagerHint.setVisibility(View.VISIBLE);
+                        binding.devicesManagerHint.animate().alpha(1f).setDuration(500);
                     }, 500);
                 } else {
-                    devicesManagerHint.setVisibility(View.GONE);
+                    binding.devicesManagerHint.setVisibility(View.GONE);
                 }
             }
         });
-        devicesManagerHint.setOnClickListener(view1 -> {
+        binding.devicesManagerHint.setOnClickListener(view1 -> {
             scan();
         });
         listAdapter.notifyDataSetChanged();
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -116,7 +112,7 @@ public class DeviceManagerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(listAdapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(recyclerView);
+        mItemTouchHelper.attachToRecyclerView(binding.devicesRecycler);
     }
 
     private void apply(){
@@ -160,9 +156,9 @@ public class DeviceManagerFragment extends Fragment {
 
     private void add(DeviceManagerDevice device){
         int position;
-        LinearLayoutManager layoutManager = ((LinearLayoutManager) recyclerView.getLayoutManager());
+        LinearLayoutManager layoutManager = ((LinearLayoutManager) binding.devicesRecycler.getLayoutManager());
         if(!listAdapter.list.isEmpty()) {
-            if(!recyclerView.canScrollVertically(1)){
+            if(!binding.devicesRecycler.canScrollVertically(1)){
                 position = layoutManager.getItemCount();
             } else {
                 position = layoutManager.findFirstCompletelyVisibleItemPosition();
@@ -174,11 +170,11 @@ public class DeviceManagerFragment extends Fragment {
         listAdapter.notifyItemInserted(position);
         if(position==0){
             new Handler().postDelayed(() -> {
-                recyclerView.smoothScrollToPosition(0);
+                binding.devicesRecycler.smoothScrollToPosition(0);
             }, 500);
         } else if (position == layoutManager.getItemCount() - 1){
             new Handler().postDelayed(() -> {
-                recyclerView.smoothScrollToPosition(listAdapter.list.size() - 1);
+                binding.devicesRecycler.smoothScrollToPosition(listAdapter.list.size() - 1);
             }, 500);
         }
     }
@@ -217,7 +213,7 @@ public class DeviceManagerFragment extends Fragment {
                 if(!listAdapter.list.isEmpty()) {
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
                         getActivity().runOnUiThread(() -> {
-                            recyclerView.smoothScrollToPosition(listAdapter.list.size() - 1);
+                            binding.devicesRecycler.smoothScrollToPosition(listAdapter.list.size() - 1);
                         });
                     }, 500);
                 }

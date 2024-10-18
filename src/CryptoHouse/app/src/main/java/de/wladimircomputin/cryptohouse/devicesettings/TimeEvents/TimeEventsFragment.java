@@ -15,12 +15,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,6 +33,7 @@ import java.util.List;
 import de.wladimircomputin.cryptohouse.R;
 import de.wladimircomputin.cryptohouse.assistant.FocusListener;
 import de.wladimircomputin.cryptohouse.boilerplate.SimpleItemTouchHelperCallback;
+import de.wladimircomputin.cryptohouse.databinding.FragmentTimeEventsBinding;
 import de.wladimircomputin.cryptohouse.devicemanager.DeviceManagerDevice;
 import de.wladimircomputin.cryptohouse.devicesettings.DeviceSettingsActivity;
 import de.wladimircomputin.libcryptoiot.v2.protocol.Content;
@@ -46,9 +45,9 @@ import de.wladimircomputin.libcryptoiot.v2.protocol.api.TimeEventType;
 
 public class TimeEventsFragment extends Fragment implements FocusListener {
 
-    SwitchCompat time_events_enabled_switch;
-    TextView time_events_hint;
-    RecyclerView time_events_recycler;
+
+    FragmentTimeEventsBinding binding;
+
     TimeEventRecyclerListAdapter timeEventRecyclerListAdapter;
     private ItemTouchHelper mItemTouchHelper;
 
@@ -63,25 +62,22 @@ public class TimeEventsFragment extends Fragment implements FocusListener {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_time_events, container, false);
-        time_events_enabled_switch = view.findViewById(R.id.time_events_enabled_switch);
-        time_events_hint = view.findViewById(R.id.time_events_hint);
-        time_events_recycler = view.findViewById(R.id.time_events_recycler);
+        binding = FragmentTimeEventsBinding.inflate(inflater, container, false);
         setHasOptionsMenu(true);
 
         timeEventRecyclerListAdapter = new TimeEventRecyclerListAdapter(viewHolder -> mItemTouchHelper.startDrag(viewHolder), timeEvents, new DeviceAPI(""), getContext());
-        time_events_recycler.setHasFixedSize(true);
-        time_events_recycler.setAdapter(timeEventRecyclerListAdapter);
-        time_events_recycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.timeEventsRecycler.setHasFixedSize(true);
+        binding.timeEventsRecycler.setAdapter(timeEventRecyclerListAdapter);
+        binding.timeEventsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        time_events_hint.setOnClickListener(view1 -> {
-            time_events_hint.setVisibility(View.GONE);
+        binding.timeEventsHint.setOnClickListener(view1 -> {
+            binding.timeEventsHint.setVisibility(View.GONE);
             add();
         });
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(timeEventRecyclerListAdapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(time_events_recycler);
+        mItemTouchHelper.attachToRecyclerView(binding.timeEventsRecycler);
 
         timeEventRecyclerListAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -98,23 +94,23 @@ public class TimeEventsFragment extends Fragment implements FocusListener {
 
             public void onChanged() {
                 super.onChanged();
-                if (timeEvents.isEmpty() && time_events_hint.getVisibility() != View.VISIBLE) {
-                    time_events_hint.postDelayed(() -> {
+                if (timeEvents.isEmpty() && binding.timeEventsHint.getVisibility() != View.VISIBLE) {
+                    binding.timeEventsHint.postDelayed(() -> {
                         if(timeEvents.isEmpty()) {
-                            time_events_hint.setAlpha(0f);
-                            time_events_hint.setVisibility(View.VISIBLE);
-                            time_events_hint.animate().alpha(1f).setDuration(500);
+                            binding.timeEventsHint.setAlpha(0f);
+                            binding.timeEventsHint.setVisibility(View.VISIBLE);
+                            binding.timeEventsHint.animate().alpha(1f).setDuration(500);
                         }
                     }, 500);
                 } else if(!timeEvents.isEmpty()) {
-                    time_events_hint.post(() -> {
-                        time_events_hint.setVisibility(View.GONE);
+                    binding.timeEventsHint.post(() -> {
+                        binding.timeEventsHint.setVisibility(View.GONE);
                     });
 
                 }
             }
         });
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -134,7 +130,7 @@ public class TimeEventsFragment extends Fragment implements FocusListener {
             public void onSuccess(Content response, int i) {
                 if(i == 0){
                     getActivity().runOnUiThread(() -> {
-                        time_events_enabled_switch.setChecked(response.data.equals("1"));
+                        binding.timeEventsEnabledSwitch.setChecked(response.data.equals("1"));
                     });
                 } else if (i == 1){
                     try {
@@ -199,7 +195,7 @@ public class TimeEventsFragment extends Fragment implements FocusListener {
     private void apply() {
         try {
 
-            String command_enabled = command_writeSettings + ":events:time_events_enabled:" + (time_events_enabled_switch.isChecked() ? "1" : "0");
+            String command_enabled = command_writeSettings + ":events:time_events_enabled:" + (binding.timeEventsEnabledSwitch.isChecked() ? "1" : "0");
             String command_time_events = command_writeSettings + ":events:time_events:";
             JSONArray jsonArray = new JSONArray();
             for(TimeEvent timeEvent : timeEvents){

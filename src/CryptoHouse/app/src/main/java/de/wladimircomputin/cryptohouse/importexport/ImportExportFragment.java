@@ -11,30 +11,29 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import de.wladimircomputin.cryptohouse.MainActivity;
 import de.wladimircomputin.cryptohouse.R;
+import de.wladimircomputin.cryptohouse.databinding.FragmentBackupRestoreBinding;
 import de.wladimircomputin.cryptohouse.ui.PagerAdapterTitleProvider;
 
 public class ImportExportFragment extends Fragment {
     FragmentStateAdapter pagerAdapter;
-    public ViewPager2 pager;
+    FragmentBackupRestoreBinding binding;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_backup_restore, container, false);
+        binding = FragmentBackupRestoreBinding.inflate(inflater, container, false);
         //setHasOptionsMenu(true);
         //((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.device_manager);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.backup_restore);
-        pager = view.findViewById(R.id.pager);
         pagerAdapter = new ImportExportPageAdapter(this.getActivity());
-        pager.setAdapter(pagerAdapter);
-        pager.setOffscreenPageLimit(2);
-        pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+        binding.pager.setAdapter(pagerAdapter);
+        binding.pager.setOffscreenPageLimit(2);
+        binding.pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
@@ -57,12 +56,11 @@ public class ImportExportFragment extends Fragment {
             }
         });
 
-        TabLayout tabLayout = view.findViewById(R.id.tab_layout);
-        new TabLayoutMediator(tabLayout, pager, (tab, position) -> {
+        new TabLayoutMediator(binding.tabLayout, binding.pager, (tab, position) -> {
             tab.setText(((PagerAdapterTitleProvider)pagerAdapter).getTitle(position));
         }
         ).attach();
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -71,7 +69,7 @@ public class ImportExportFragment extends Fragment {
         MainActivity mainActivity = (MainActivity) getActivity();
         Uri importUri = mainActivity.getImportUri();
         if (importUri != null){
-            pager.setCurrentItem(1);
+            binding.pager.setCurrentItem(1);
         }
     }
 }

@@ -9,11 +9,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,14 +26,11 @@ import java.util.UUID;
 import de.wladimircomputin.cryptohouse.R;
 import de.wladimircomputin.cryptohouse.actions.ActionItem;
 import de.wladimircomputin.cryptohouse.boilerplate.SimpleItemTouchHelperCallback;
+import de.wladimircomputin.cryptohouse.databinding.ActivityActionConfigBinding;
 import de.wladimircomputin.cryptohouse.devicemanager.DeviceManagerDevice;
 
 public class ActionConfigActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
-    private EditText nameEdittext;
-    private RecyclerView actionDeviceRecycleview;
-    private TextView actionsDevicesHint;
     String action_id;
     String current_profile;
     ActionItem actionItem;
@@ -45,19 +39,16 @@ public class ActionConfigActivity extends AppCompatActivity {
     ActionDeviceItemRecyclerListAdapter actionDeviceItemRecyclerListAdapter;
     ItemTouchHelper mItemTouchHelper;
 
+    ActivityActionConfigBinding binding;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_action_config);
-        nameEdittext = findViewById(R.id.action_name_edittext);
-        actionDeviceRecycleview = findViewById(R.id.action_config_recycleview);
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        binding = ActivityActionConfigBinding.inflate(getLayoutInflater());
+        setSupportActionBar(binding.toolbar.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        actionsDevicesHint = findViewById(R.id.actions_devices_hint);
-        actionsDevicesHint.setOnClickListener(view1 -> {
+        binding.actionsDevicesHint.setOnClickListener(view1 -> {
             add();
         });
 
@@ -82,9 +73,9 @@ public class ActionConfigActivity extends AppCompatActivity {
                 actionDeviceItemRecyclerListAdapter = new ActionDeviceItemRecyclerListAdapter(viewHolder -> mItemTouchHelper.startDrag(viewHolder), deviceManagerItems, this);
                 ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(actionDeviceItemRecyclerListAdapter);
                 mItemTouchHelper = new ItemTouchHelper(callback);
-                mItemTouchHelper.attachToRecyclerView(actionDeviceRecycleview);
-                actionDeviceRecycleview.setAdapter(actionDeviceItemRecyclerListAdapter);
-                actionDeviceRecycleview.setLayoutManager(new LinearLayoutManager(this));
+                mItemTouchHelper.attachToRecyclerView(binding.actionConfigRecycleview);
+                binding.actionConfigRecycleview.setAdapter(actionDeviceItemRecyclerListAdapter);
+                binding.actionConfigRecycleview.setLayoutManager(new LinearLayoutManager(this));
                 actionDeviceItemRecyclerListAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
                     @Override
                     public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -101,14 +92,14 @@ public class ActionConfigActivity extends AppCompatActivity {
                     @Override
                     public void onChanged() {
                         super.onChanged();
-                        if(actionDeviceItemRecyclerListAdapter.list.isEmpty() && actionsDevicesHint.getVisibility() != View.VISIBLE){
-                            actionsDevicesHint.postDelayed(() -> {
-                                actionsDevicesHint.setAlpha(0f);
-                                actionsDevicesHint.setVisibility(View.VISIBLE);
-                                actionsDevicesHint.animate().alpha(1f).setDuration(500);
+                        if(actionDeviceItemRecyclerListAdapter.list.isEmpty() && binding.actionsDevicesHint.getVisibility() != View.VISIBLE){
+                            binding.actionsDevicesHint.postDelayed(() -> {
+                                binding.actionsDevicesHint.setAlpha(0f);
+                                binding.actionsDevicesHint.setVisibility(View.VISIBLE);
+                                binding.actionsDevicesHint.animate().alpha(1f).setDuration(500);
                             }, 500);
                         } else {
-                            actionsDevicesHint.setVisibility(View.GONE);
+                            binding.actionsDevicesHint.setVisibility(View.GONE);
                         }
                     }
                 });
@@ -120,22 +111,23 @@ public class ActionConfigActivity extends AppCompatActivity {
                     JSONObject actions = new JSONObject(actionsjson);
                     actionItem = new ActionItem(actions.getJSONObject(action_id), deviceManagerItems);
                 } catch (JSONException x) {
-                    actionItem = new ActionItem(UUID.randomUUID().toString(), nameEdittext.getText().toString(), new ActionDeviceItem[]{});
+                    actionItem = new ActionItem(UUID.randomUUID().toString(), binding.actionNameEdittext.getText().toString(), new ActionDeviceItem[]{});
                     x.printStackTrace();
                 }
                 actionDeviceItemRecyclerListAdapter.list.addAll(Arrays.asList(actionItem.action_device_items));
             } else {
-                actionItem = new ActionItem(UUID.randomUUID().toString(), nameEdittext.getText().toString(), new ActionDeviceItem[]{});
+                actionItem = new ActionItem(UUID.randomUUID().toString(), binding.actionNameEdittext.getText().toString(), new ActionDeviceItem[]{});
             }
             actionDeviceItemRecyclerListAdapter.notifyDataSetChanged();
 
-            nameEdittext.setText(actionItem.name);
+            binding.actionNameEdittext.setText(actionItem.name);
             getSupportActionBar().setTitle(actionItem.name);
 
 
         } catch (JSONException x){
             x.printStackTrace();
         }
+        setContentView(binding.getRoot());
     }
 
     @Override
@@ -171,9 +163,9 @@ public class ActionConfigActivity extends AppCompatActivity {
 
     private void add() {
         int position;
-        LinearLayoutManager layoutManager = ((LinearLayoutManager) actionDeviceRecycleview.getLayoutManager());
+        LinearLayoutManager layoutManager = ((LinearLayoutManager) binding.actionConfigRecycleview.getLayoutManager());
         if(!actionDeviceItemRecyclerListAdapter.list.isEmpty()) {
-            if(!actionDeviceRecycleview.canScrollVertically(1)){
+            if(!binding.actionConfigRecycleview.canScrollVertically(1)){
                 position = layoutManager.getItemCount();
             } else {
                 position = layoutManager.findFirstCompletelyVisibleItemPosition();
@@ -185,17 +177,17 @@ public class ActionConfigActivity extends AppCompatActivity {
         actionDeviceItemRecyclerListAdapter.notifyItemInserted(position);
         if(position==0){
             new Handler().postDelayed(() -> {
-                actionDeviceRecycleview.smoothScrollToPosition(0);
+                binding.actionConfigRecycleview.smoothScrollToPosition(0);
             }, 500);
         } else if (position == layoutManager.getItemCount() - 1){
             new Handler().postDelayed(() -> {
-                actionDeviceRecycleview.smoothScrollToPosition(actionDeviceItemRecyclerListAdapter.list.size() - 1);
+                binding.actionConfigRecycleview.smoothScrollToPosition(actionDeviceItemRecyclerListAdapter.list.size() - 1);
             }, 500);
         }
     }
 
     private void apply() {
-        actionItem.name = nameEdittext.getText().toString();
+        actionItem.name = binding.actionNameEdittext.getText().toString();
         actionItem.action_device_items = actionDeviceItemRecyclerListAdapter.list.toArray(new ActionDeviceItem[0]);
         String actionsjson = sharedPrefs.getString(current_profile, "{}");
         try {

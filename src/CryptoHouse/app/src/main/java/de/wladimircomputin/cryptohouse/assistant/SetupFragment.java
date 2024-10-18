@@ -20,12 +20,6 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
@@ -38,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.wladimircomputin.cryptohouse.R;
+import de.wladimircomputin.cryptohouse.databinding.FragmentAssistantSetupBinding;
 import de.wladimircomputin.libcryptoiot.v2.protocol.Content;
 import de.wladimircomputin.libcryptoiot.v2.protocol.CryptCon;
 import de.wladimircomputin.libcryptoiot.v2.protocol.CryptConBulkReceiver;
@@ -47,16 +42,7 @@ import de.wladimircomputin.libcryptoiot.v2.util.WifiScanItem;
 
 public class SetupFragment extends Fragment implements FocusListener {
 
-    private TextView devicetypeLabel;
-    private ImageView devicetypeImage;
-    private EditText hostnameEdittext;
-    private EditText devicepassEdittext;
-    private Spinner wifiModeSpinner;
-    private EditText wifiSsidEdittext;
-    private Button wifiScanButton;
-    private ProgressBar wifiScanProgress;
-    private EditText wifiPassEdittext;
-    private Button applyButton;
+    FragmentAssistantSetupBinding binding;
 
     DiscoveryDevice device;
 
@@ -70,17 +56,7 @@ public class SetupFragment extends Fragment implements FocusListener {
     // Inflate the view for the fragment based on layout XML
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_assistant_setup, container, false);
-        devicetypeLabel = view.findViewById(R.id.assistant_devicetype_label);
-        devicetypeImage = view.findViewById(R.id.assistant_devicetype_image);
-        hostnameEdittext = view.findViewById(R.id.assistant_hostname_edittext);
-        devicepassEdittext = view.findViewById(R.id.assistant_devicepass_edittext);
-        wifiModeSpinner = view.findViewById(R.id.assistant_wifi_mode_spinner);
-        wifiSsidEdittext = view.findViewById(R.id.assistant_wifi_ssid_edittext);
-        wifiScanButton = view.findViewById(R.id.assistant_wifi_scan_button);
-        wifiScanProgress = view.findViewById(R.id.assistant_wifi_scan_progress);
-        wifiPassEdittext = view.findViewById(R.id.assistant_wifi_pass_edittext);
-        applyButton = view.findViewById(R.id.assistant_apply_button);
+        binding = FragmentAssistantSetupBinding.inflate(inflater, container, false);
 
         cc = new CryptCon(devicepass_factory_default, ap_ip_default);
         new Handler().postDelayed(() -> {cc.sendMessageEncrypted(command_discover, new CryptConReceiver() {
@@ -89,23 +65,23 @@ public class SetupFragment extends Fragment implements FocusListener {
                 new Handler(Looper.getMainLooper()).post(() -> {
                     device = new DiscoveryDevice(response.data);
 
-                    devicetypeLabel.setText(device.type);
+                    binding.assistantDevicetypeLabel.setText(device.type);
                     String[] devicetypes = getResources().getStringArray(R.array.devicetypes);
                     TranslateAnimation animate = new TranslateAnimation(
                             0,                 // fromXDelta
                             0,                 // toXDelta
-                            devicetypeImage.getHeight(),  // fromYDelta
+                            binding.assistantDevicetypeImage.getHeight(),  // fromYDelta
                             0);                // toYDelta
                     animate.setDuration(500);
                     animate.setInterpolator(new DecelerateInterpolator());
                     if (Arrays.asList(devicetypes).contains(device.type)) {
-                        devicetypeImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_baseline_check_24));
-                        devicetypeImage.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+                        binding.assistantDevicetypeImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_baseline_check_24));
+                        binding.assistantDevicetypeImage.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
                     } else {
-                        devicetypeImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.baseline_question_mark_24));
-                        devicetypeImage.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.design_default_color_error)));
+                        binding.assistantDevicetypeImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.baseline_question_mark_24));
+                        binding.assistantDevicetypeImage.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.design_default_color_error)));
                     }
-                    devicetypeImage.startAnimation(animate);
+                    binding.assistantDevicetypeImage.startAnimation(animate);
                 });
             }
 
@@ -125,15 +101,15 @@ public class SetupFragment extends Fragment implements FocusListener {
             }
         });}, 10000);
 
-        wifiScanButton.setOnClickListener((v) -> {
+        binding.assistantWifiScanButton.setOnClickListener((v) -> {
             scan();
         });
 
-        wifiModeSpinner.setSelection(1);
-        applyButton.setOnClickListener((v) -> {
+        binding.assistantWifiModeSpinner.setSelection(1);
+        binding.assistantApplyButton.setOnClickListener((v) -> {
             apply();
         });
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -147,8 +123,8 @@ public class SetupFragment extends Fragment implements FocusListener {
     public void scan(){
         Toast.makeText(getContext(), getString(R.string.wifi_scanning), Toast.LENGTH_SHORT).show();
 
-        wifiScanProgress.setVisibility(View.VISIBLE);
-        wifiScanButton.setVisibility(View.INVISIBLE);
+        binding.assistantWifiScanProgress.setVisibility(View.VISIBLE);
+        binding.assistantWifiScanButton.setVisibility(View.INVISIBLE);
         cc.sendMessageEncrypted(command_wifiscan, new CryptConReceiver() {
             @Override
             public void onSuccess(Content response) {
@@ -181,7 +157,7 @@ public class SetupFragment extends Fragment implements FocusListener {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                                     builder.setTitle(getString(R.string.select_ssid));
 
-                                    builder.setItems(arr, (dialog, which) -> wifiSsidEdittext.setText(arr[which]));
+                                    builder.setItems(arr, (dialog, which) -> binding.assistantWifiSsidEdittext.setText(arr[which]));
                                     AlertDialog dialog = builder.create();
                                     dialog.show();
                                 });
@@ -203,8 +179,8 @@ public class SetupFragment extends Fragment implements FocusListener {
                         @Override
                         public void onFinished() {
                             new Handler(Looper.getMainLooper()).post(() -> {
-                                wifiScanButton.setVisibility(View.VISIBLE);
-                                wifiScanProgress.setVisibility(View.INVISIBLE);
+                                binding.assistantWifiScanButton.setVisibility(View.VISIBLE);
+                                binding.assistantWifiScanProgress.setVisibility(View.INVISIBLE);
                             });
                         }
 
@@ -219,8 +195,8 @@ public class SetupFragment extends Fragment implements FocusListener {
             @Override
             public void onFail() {
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    wifiScanButton.setVisibility(View.VISIBLE);
-                    wifiScanProgress.setVisibility(View.INVISIBLE);
+                    binding.assistantWifiScanButton.setVisibility(View.VISIBLE);
+                    binding.assistantWifiScanProgress.setVisibility(View.INVISIBLE);
                 });
             }
 
@@ -241,13 +217,13 @@ public class SetupFragment extends Fragment implements FocusListener {
     public void apply(){
         DeviceSetupPack pack = new DeviceSetupPack();
 
-        pack.hostname = hostnameEdittext.getText().toString();
+        pack.hostname = binding.assistantHostnameEdittext.getText().toString();
         pack.mac = device.mac;
         pack.type = device.type;
-        pack.devicepass = devicepassEdittext.getText().toString();
-        pack.wifimode = String.valueOf(wifiModeSpinner.getSelectedItem());
-        pack.ssid = wifiSsidEdittext.getText().toString();
-        pack.wifipass = wifiPassEdittext.getText().toString();
+        pack.devicepass = binding.assistantDevicepassEdittext.getText().toString();
+        pack.wifimode = String.valueOf(binding.assistantWifiModeSpinner.getSelectedItem());
+        pack.ssid = binding.assistantWifiSsidEdittext.getText().toString();
+        pack.wifipass = binding.assistantWifiPassEdittext.getText().toString();
 
         if(!(pack.devicepass.length() >= 8 && pack.devicepass.length() <= 64)){
             Toast.makeText(getContext(), getString(R.string.device_password_short_long), Toast.LENGTH_SHORT).show();

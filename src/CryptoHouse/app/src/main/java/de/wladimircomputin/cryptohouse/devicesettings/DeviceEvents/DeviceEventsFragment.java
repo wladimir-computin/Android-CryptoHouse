@@ -15,12 +15,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,6 +33,7 @@ import java.util.List;
 import de.wladimircomputin.cryptohouse.R;
 import de.wladimircomputin.cryptohouse.assistant.FocusListener;
 import de.wladimircomputin.cryptohouse.boilerplate.SimpleItemTouchHelperCallback;
+import de.wladimircomputin.cryptohouse.databinding.FragmentDeviceEventsBinding;
 import de.wladimircomputin.cryptohouse.devicemanager.DeviceManagerDevice;
 import de.wladimircomputin.cryptohouse.devicesettings.DeviceSettingsActivity;
 import de.wladimircomputin.libcryptoiot.v2.protocol.Content;
@@ -45,9 +44,7 @@ import de.wladimircomputin.libcryptoiot.v2.protocol.api.DeviceAPI;
 
 public class DeviceEventsFragment extends Fragment implements FocusListener {
 
-    SwitchCompat device_events_enabled_switch;
-    TextView device_events_hint;
-    RecyclerView device_events_recycler;
+    FragmentDeviceEventsBinding binding;
     DeviceEventRecyclerListAdapter deviceEventRecyclerListAdapter;
     private ItemTouchHelper mItemTouchHelper;
 
@@ -62,25 +59,23 @@ public class DeviceEventsFragment extends Fragment implements FocusListener {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_device_events, container, false);
-        device_events_enabled_switch = view.findViewById(R.id.device_events_enabled_switch);
-        device_events_hint = view.findViewById(R.id.device_events_hint);
-        device_events_recycler = view.findViewById(R.id.device_events_recycler);
+        super.onCreateView(inflater, container, savedInstanceState);
+        binding = FragmentDeviceEventsBinding.inflate(inflater, container, false);
         setHasOptionsMenu(true);
 
         deviceEventRecyclerListAdapter = new DeviceEventRecyclerListAdapter(viewHolder -> mItemTouchHelper.startDrag(viewHolder), deviceEvents, new DeviceAPI(""), getContext());
-        device_events_recycler.setHasFixedSize(true);
-        device_events_recycler.setAdapter(deviceEventRecyclerListAdapter);
-        device_events_recycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.deviceEventsRecycler.setHasFixedSize(true);
+        binding.deviceEventsRecycler.setAdapter(deviceEventRecyclerListAdapter);
+        binding.deviceEventsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        device_events_hint.setOnClickListener(view1 -> {
-            device_events_hint.setVisibility(View.GONE);
+        binding.deviceEventsHint.setOnClickListener(view1 -> {
+            binding.deviceEventsHint.setVisibility(View.GONE);
             add();
         });
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(deviceEventRecyclerListAdapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(device_events_recycler);
+        mItemTouchHelper.attachToRecyclerView(binding.deviceEventsRecycler);
 
         deviceEventRecyclerListAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -97,23 +92,23 @@ public class DeviceEventsFragment extends Fragment implements FocusListener {
 
             public void onChanged() {
                 super.onChanged();
-                if (deviceEvents.isEmpty() && device_events_hint.getVisibility() != View.VISIBLE) {
-                    device_events_hint.postDelayed(() -> {
+                if (deviceEvents.isEmpty() && binding.deviceEventsHint.getVisibility() != View.VISIBLE) {
+                    binding.deviceEventsHint.postDelayed(() -> {
                         if(deviceEvents.isEmpty()) {
-                            device_events_hint.setAlpha(0f);
-                            device_events_hint.setVisibility(View.VISIBLE);
-                            device_events_hint.animate().alpha(1f).setDuration(500);
+                            binding.deviceEventsHint.setAlpha(0f);
+                            binding.deviceEventsHint.setVisibility(View.VISIBLE);
+                            binding.deviceEventsHint.animate().alpha(1f).setDuration(500);
                         }
                     }, 500);
                 } else if(!deviceEvents.isEmpty()) {
-                    device_events_hint.post(() -> {
-                        device_events_hint.setVisibility(View.GONE);
+                    binding.deviceEventsHint.post(() -> {
+                        binding.deviceEventsHint.setVisibility(View.GONE);
                     });
 
                 }
             }
         });
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -133,7 +128,7 @@ public class DeviceEventsFragment extends Fragment implements FocusListener {
             public void onSuccess(Content response, int i) {
                 if(i == 0){
                     getActivity().runOnUiThread(() -> {
-                        device_events_enabled_switch.setChecked(response.data.equals("1"));
+                        binding.deviceEventsEnabledSwitch.setChecked(response.data.equals("1"));
                     });
                 } else if (i == 1){
                     try {
@@ -197,7 +192,7 @@ public class DeviceEventsFragment extends Fragment implements FocusListener {
 
     private void apply() {
         try {
-            String command_enabled = command_writeSettings + ":events:device_events_enabled:" + (device_events_enabled_switch.isChecked() ? "1" : "0");
+            String command_enabled = command_writeSettings + ":events:device_events_enabled:" + (binding.deviceEventsEnabledSwitch.isChecked() ? "1" : "0");
             String command_device_events = command_writeSettings + ":events:device_events:";
             JSONArray jsonArray = new JSONArray();
             for(DeviceEvent deviceEvent : deviceEvents){

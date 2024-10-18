@@ -31,6 +31,7 @@ import java.util.List;
 
 import de.wladimircomputin.cryptohouse.R;
 import de.wladimircomputin.cryptohouse.assistant.FocusListener;
+import de.wladimircomputin.cryptohouse.databinding.FragmentPersistentMemoryBinding;
 import de.wladimircomputin.cryptohouse.devicesettings.DeviceSettingsActivity;
 import de.wladimircomputin.cryptohouse.devicesettings.ExpandableListAdapter;
 import de.wladimircomputin.libcryptoiot.v2.protocol.Content;
@@ -43,7 +44,7 @@ public class PersistentMemoryFragment extends Fragment implements FocusListener 
     List<String> data = new ArrayList<>();
     LinkedHashMap<String, ArrayList<KVPair<String, String>>> dataDetail = new LinkedHashMap<>();
 
-    ExpandableListView expandableListView;
+    FragmentPersistentMemoryBinding binding;
     ExpandableListAdapter expandableListAdapter;
 
     @Override
@@ -55,9 +56,8 @@ public class PersistentMemoryFragment extends Fragment implements FocusListener 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_persistent_memory, container, false);
-        expandableListView = view.findViewById(R.id.expandableListView);
-        return view;
+        binding = FragmentPersistentMemoryBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -65,16 +65,16 @@ public class PersistentMemoryFragment extends Fragment implements FocusListener 
         super.onViewCreated(view, savedInstanceState);
 
         expandableListAdapter = new ExpandableListAdapter(getContext(), data, dataDetail);
-        expandableListView.setAdapter(expandableListAdapter);
+        binding.expandableListView.setAdapter(expandableListAdapter);
 
-        expandableListView.setOnGroupExpandListener(groupPosition -> {
+        binding.expandableListView.setOnGroupExpandListener(groupPosition -> {
         });
 
-        expandableListView.setOnGroupCollapseListener(groupPosition -> {
+        binding.expandableListView.setOnGroupCollapseListener(groupPosition -> {
 
         });
 
-        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+        binding.expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 return false;

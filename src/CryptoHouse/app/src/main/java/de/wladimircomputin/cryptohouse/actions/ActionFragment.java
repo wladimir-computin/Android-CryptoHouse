@@ -10,10 +10,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,20 +30,19 @@ import de.wladimircomputin.cryptohouse.actions.config.ActionDeviceItem;
 import de.wladimircomputin.cryptohouse.actions.status.ActionItemRecyclerListAdapter;
 import de.wladimircomputin.cryptohouse.actions.status.ActionStatusHolder;
 import de.wladimircomputin.cryptohouse.boilerplate.SimpleItemTouchHelperCallback;
+import de.wladimircomputin.cryptohouse.databinding.FragmentActionsBinding;
 import de.wladimircomputin.cryptohouse.devicemanager.DeviceManagerDevice;
 import de.wladimircomputin.libcryptoiot.v2.protocol.Content;
 import de.wladimircomputin.libcryptoiot.v2.protocol.CryptConBulkReceiver;
 
 public class ActionFragment extends Fragment {
 
-    private Toolbar toolbar;
     private ItemTouchHelper mItemTouchHelper;
     SharedPreferences sharedPrefs;
     ActionItemRecyclerListAdapter listAdapter;
-    RecyclerView recyclerView;
-    TextView actionsHint;
     String current_profile;
     HashMap<String, DeviceManagerDevice> deviceManagerItems;
+    FragmentActionsBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,7 +52,7 @@ public class ActionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_actions, container, false);
+        binding = FragmentActionsBinding.inflate(inflater, container, false);
         setHasOptionsMenu(true);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.actions);
 
@@ -138,19 +135,17 @@ public class ActionFragment extends Fragment {
             }
         }, deviceManagerItems, getContext());
 
-        recyclerView = view.findViewById(R.id.actions_recycler);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(listAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.actionsRecycler.setHasFixedSize(true);
+        binding.actionsRecycler.setAdapter(listAdapter);
+        binding.actionsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        actionsHint = view.findViewById(R.id.actions_hint);
-        actionsHint.setOnClickListener(view1 -> {
+        binding.actionsHint.setOnClickListener(view1 -> {
             add();
         });
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(listAdapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(recyclerView);
+        mItemTouchHelper.attachToRecyclerView(binding.actionsRecycler);
 
         listAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -168,26 +163,26 @@ public class ActionFragment extends Fragment {
             @Override
             public void onChanged() {
                 super.onChanged();
-                if(listAdapter.list.isEmpty() && actionsHint.getVisibility() != View.VISIBLE){
-                    actionsHint.postDelayed(() -> {
-                        actionsHint.setAlpha(0f);
-                        actionsHint.setVisibility(View.VISIBLE);
-                        actionsHint.animate().alpha(1f).setDuration(500);
+                if(listAdapter.list.isEmpty() && binding.actionsHint.getVisibility() != View.VISIBLE){
+                    binding.actionsHint.postDelayed(() -> {
+                        binding.actionsHint.setAlpha(0f);
+                        binding.actionsHint.setVisibility(View.VISIBLE);
+                        binding.actionsHint.animate().alpha(1f).setDuration(500);
                     }, 500);
 
                 } else {
-                    actionsHint.setVisibility(View.GONE);
+                    binding.actionsHint.setVisibility(View.GONE);
                 }
             }
         });
 
         loadActions();
-        return view;
+        return binding.getRoot();
     }
 
     public void loadActions(){
         listAdapter.list.clear();
-        recyclerView.removeAllViews();
+        binding.actionsRecycler.removeAllViews();
         try {
             SharedPreferences sharedPrefs = getContext().getSharedPreferences("de.wladimircomputin.cryptohouse.actions", Context.MODE_PRIVATE);
             String actionsjson = sharedPrefs.getString(current_profile, "{}");

@@ -8,18 +8,16 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ProgressBar;
 
 import androidx.fragment.app.Fragment;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.TimerTask;
 import java.util.UUID;
 
 import de.wladimircomputin.cryptohouse.R;
+import de.wladimircomputin.cryptohouse.databinding.FragmentAssistantFinishBinding;
 import de.wladimircomputin.cryptohouse.devicemanager.DeviceManagerDevice;
 
 public class FinishFragment extends Fragment implements FocusListener {
@@ -35,11 +33,9 @@ public class FinishFragment extends Fragment implements FocusListener {
         }
     }
 
-    Button finishButton;
-    ProgressBar finishProgress;
+    FragmentAssistantFinishBinding binding;
+
     final int WAIT_AT_LEAST = 5000;
-
-
 
 
     @Override
@@ -51,10 +47,9 @@ public class FinishFragment extends Fragment implements FocusListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_assistant_finish, container, false);
-        finishButton = view.findViewById(R.id.assistant_finish_button);
-        finishProgress = view.findViewById(R.id.assistant_finish_progress);
+        binding = FragmentAssistantFinishBinding.inflate(inflater, container, false);
 
-        finishButton.setOnClickListener((v) -> {
+        binding.assistantFinishButton.setOnClickListener((v) -> {
             finishAssistant();
         });
         return view;
@@ -69,7 +64,7 @@ public class FinishFragment extends Fragment implements FocusListener {
     }
 
     public void finishAssistant(){
-        finishProgress.setVisibility(View.VISIBLE);
+        binding.assistantFinishProgress.setVisibility(View.VISIBLE);
         (new Handler()).postDelayed(() -> {
             DeviceSetupPack pack = ((AssistantActivity)getActivity()).pack;
             DeviceManagerDevice device = new DeviceManagerDevice(UUID.randomUUID().toString(), pack.hostname, pack.type, pack.hostname, "127.0.0.1", pack.mac, pack.devicepass, true, "");

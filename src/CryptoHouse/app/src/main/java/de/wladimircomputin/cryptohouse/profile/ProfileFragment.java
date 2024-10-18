@@ -10,15 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
-import com.mikhaellopez.circularimageview.CircularImageView;
 
 import org.json.JSONArray;
 
@@ -26,14 +22,14 @@ import java.util.UUID;
 
 import de.wladimircomputin.cryptohouse.MainActivity;
 import de.wladimircomputin.cryptohouse.R;
+import de.wladimircomputin.cryptohouse.databinding.FragmentProfileBinding;
 
 public class ProfileFragment extends Fragment {
-    CircularImageView profileImage;
-    EditText profileName;
-    Button profileDelete;
     SharedPreferences sharedPrefs;
 
     ProfileItem profileItem;
+
+    private FragmentProfileBinding binding;
 
     public ProfileFragment(){
         this.profileItem = new ProfileItem(UUID.randomUUID().toString(), "", "");
@@ -51,16 +47,13 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        binding = FragmentProfileBinding.inflate(inflater, container, false);
         sharedPrefs = getContext().getSharedPreferences("de.wladimircomputin.cryptohouse.profiles", Context.MODE_PRIVATE);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.edit_profile);
         setHasOptionsMenu(true);
-        profileImage = view.findViewById(R.id.profile_fragment_image);
-        profileName = view.findViewById(R.id.profile_fragment_name);
-        profileDelete = view.findViewById(R.id.profile_fragment_delete);
-        profileName.setText(profileItem.name);
-        profileDelete.setVisibility(View.VISIBLE);
-        profileDelete.setOnClickListener((v) -> {
+        binding.profileFragmentName.setText(profileItem.name);
+        binding.profileFragmentDelete.setVisibility(View.VISIBLE);
+        binding.profileFragmentDelete.setOnClickListener((v) -> {
             new AlertDialog.Builder(getContext())
                 .setTitle(R.string.delete_profile)
                 .setMessage(R.string.delete_profile_question)
@@ -76,7 +69,7 @@ public class ProfileFragment extends Fragment {
         });
 
 
-        return view;
+        return binding.getRoot();
     }
 
     public void deleteProfile(){
@@ -103,7 +96,7 @@ public class ProfileFragment extends Fragment {
     }
 
     public void saveProfile(){
-        profileItem.name = profileName.getText().toString();
+        profileItem.name = binding.profileFragmentName.getText().toString();
         try {
             String profilejson = sharedPrefs.getString("profiles", "");
             JSONArray arr;

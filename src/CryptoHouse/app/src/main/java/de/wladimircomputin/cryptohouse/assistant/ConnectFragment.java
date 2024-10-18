@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,12 +21,11 @@ import com.thanosfisherman.wifiutils.WifiUtils;
 import com.thanosfisherman.wifiutils.wifiConnect.ConnectionErrorCode;
 import com.thanosfisherman.wifiutils.wifiConnect.ConnectionSuccessListener;
 
-import de.wladimircomputin.cryptohouse.R;
+import de.wladimircomputin.cryptohouse.databinding.FragmentAssistantConnectBinding;
 
 public class ConnectFragment extends Fragment implements FocusListener {
 
-    Button connectButton;
-    ProgressBar connectProgress;
+    FragmentAssistantConnectBinding binding;
 
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -52,14 +49,13 @@ public class ConnectFragment extends Fragment implements FocusListener {
     // Inflate the view for the fragment based on layout XML
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_assistant_connect, container, false);
-        connectButton = view.findViewById(R.id.assistant_connect_button);
-        connectProgress = view.findViewById(R.id.assistant_connect_progress);
-        connectButton.setOnClickListener((v) -> {
+        super.onCreateView(inflater, container, savedInstanceState);
+        binding = FragmentAssistantConnectBinding.inflate(inflater, container, false);
+        binding.assistantConnectButton.setOnClickListener((v) -> {
             connect();
         });
 
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -72,21 +68,21 @@ public class ConnectFragment extends Fragment implements FocusListener {
 
     private void connect(){
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            connectProgress.setVisibility(View.VISIBLE);
+            binding.assistantConnectProgress.setVisibility(View.VISIBLE);
             WifiUtils.withContext(getContext()).connectWith(wifissid_factory_default, wifipass_factory_default)
                     .setTimeout(10000)
                     .onConnectionResult(new ConnectionSuccessListener() {
                         @Override
                         public void success() {
                             getActivity().runOnUiThread(() -> {
-                                connectProgress.setVisibility(View.GONE);
+                                binding.assistantConnectProgress.setVisibility(View.GONE);
                                 ((AssistantActivity)getActivity()).nextPage();
                             });
                         }
 
                         @Override
                         public void failed(@NonNull ConnectionErrorCode errorCode) {
-                            connectProgress.setVisibility(View.GONE);
+                            binding.assistantConnectProgress.setVisibility(View.GONE);
                             Toast.makeText(getContext(), errorCode.toString(), Toast.LENGTH_SHORT).show();
                         }
                     }).start();

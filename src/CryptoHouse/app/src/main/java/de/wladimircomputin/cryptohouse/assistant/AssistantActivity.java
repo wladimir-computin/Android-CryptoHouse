@@ -14,24 +14,24 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import de.wladimircomputin.cryptohouse.R;
+import de.wladimircomputin.cryptohouse.databinding.ActivityAssistantBinding;
 import de.wladimircomputin.cryptohouse.ui.PagerAdapterTitleProvider;
 
 public class AssistantActivity extends AppCompatActivity {
     FragmentStateAdapter pagerAdapter;
-    public ViewPager2 pager;
     public DeviceSetupPack pack;
 
+    ActivityAssistantBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_assistant);
-        pager = findViewById(R.id.pager);
+        binding = ActivityAssistantBinding.inflate(getLayoutInflater());
         pagerAdapter = new AssisstanPageAdapter(this);
-        pager.setAdapter(pagerAdapter);
-        pager.setUserInputEnabled(false);
-        pager.setOffscreenPageLimit(2);
-        pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+        binding.pager.setAdapter(pagerAdapter);
+        binding.pager.setUserInputEnabled(false);
+        binding.pager.setOffscreenPageLimit(2);
+        binding.pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
@@ -54,11 +54,11 @@ public class AssistantActivity extends AppCompatActivity {
             }
         });
 
-        TabLayout tabLayout = findViewById(R.id.tab_layout);
-        new TabLayoutMediator(tabLayout, pager, (tab, position) -> {
+        new TabLayoutMediator(binding.tabLayout, binding.pager, (tab, position) -> {
             tab.setText(((PagerAdapterTitleProvider)pagerAdapter).getTitle(position));
         }
         ).attach();
+        setContentView(binding.getRoot());
     }
 
     @Override
@@ -67,11 +67,11 @@ public class AssistantActivity extends AppCompatActivity {
     }
 
     public void nextPage() {
-        pager.setCurrentItem(pager.getCurrentItem() + 1, true);
+        binding.pager.setCurrentItem(binding.pager.getCurrentItem() + 1, true);
     }
 
     public void setPage(int page){
-        pager.setCurrentItem(page, true);
+        binding.pager.setCurrentItem(page, true);
     }
 
     public void setProgessAnimateDelayed(ProgressBar pb, int progress, int delay){

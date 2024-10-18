@@ -7,9 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +18,7 @@ import java.util.List;
 import de.wladimircomputin.cryptohouse.R;
 import de.wladimircomputin.cryptohouse.actions.config.CommandAutoCompleteAdapter;
 import de.wladimircomputin.cryptohouse.assistant.FocusListener;
+import de.wladimircomputin.cryptohouse.databinding.FragmentTerminalBinding;
 import de.wladimircomputin.cryptohouse.devicemanager.DeviceManagerDevice;
 import de.wladimircomputin.cryptohouse.devicesettings.DeviceSettingsActivity;
 import de.wladimircomputin.libcryptoiot.v2.protocol.Content;
@@ -29,15 +27,9 @@ import de.wladimircomputin.libcryptoiot.v2.protocol.CryptConReceiver;
 import de.wladimircomputin.libcryptoiot.v2.protocol.api.DeviceAPI;
 
 public class TerminalFragment extends Fragment implements FocusListener {
-    ScrollView terminalScroll;
-    TextView terminalText;
-    AutoCompleteTextView terminalPromptText;
     CommandAutoCompleteAdapter commandAutoCompleteAdapter;
-    Button terminalLeft;
-    Button terminalRight;
-    Button terminalDown;
-    Button terminalUp;
-    Button terminalColon;
+
+    FragmentTerminalBinding binding;
 
     List<String> history;
     int historyPos = 0;
@@ -45,16 +37,9 @@ public class TerminalFragment extends Fragment implements FocusListener {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_terminal, container, false);
-        terminalScroll = view.findViewById(R.id.terminalScroll);
-        terminalText = view.findViewById(R.id.terminalText);
-        terminalPromptText = view.findViewById(R.id.terminalPromptText);
-        terminalLeft = view.findViewById(R.id.terminalLeft);
-        terminalRight = view.findViewById(R.id.terminalRight);
-        terminalDown = view.findViewById(R.id.terminalDown);
-        terminalUp = view.findViewById(R.id.terminalUp);
-        terminalColon = view.findViewById(R.id.terminalColon);
-        return view;
+        super.onCreateView(inflater, container, savedInstanceState);
+        binding = FragmentTerminalBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -64,17 +49,17 @@ public class TerminalFragment extends Fragment implements FocusListener {
         DeviceManagerDevice device = ((DeviceSettingsActivity)getActivity()).device;
         commandAutoCompleteAdapter = new CommandAutoCompleteAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item);
 
-        terminalText.setText(device.name + "-># ");
+        binding.terminalText.setText(device.name + "-># ");
 
-        terminalPromptText.setOnKeyListener((v, keyCode, event) -> {
+        binding.terminalPromptText.setOnKeyListener((v, keyCode, event) -> {
             if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                 AutoCompleteTextView editText = ((AutoCompleteTextView) v);
-                terminalText.append(editText.getText().toString());
+                binding.terminalText.append(editText.getText().toString());
                 cc.sendMessageEncrypted(editText.getText().toString(), CryptCon.Mode.UDP, new CryptConReceiver() {
                     @Override
                     public void onSuccess(Content response) {
                         getActivity().runOnUiThread(() -> {
-                            terminalText.append(editText.getText().toString() + "\n" + response.data);
+                            binding.terminalText.append(editText.getText().toString() + "\n" + response.data);
                         });
 
                     }
@@ -87,9 +72,9 @@ public class TerminalFragment extends Fragment implements FocusListener {
                     @Override
                     public void onFinished() {
                         getActivity().runOnUiThread(() -> {
-                            terminalText.append("\n\n" + device.name + "-># ");
-                            terminalScroll.post(() -> {
-                                terminalScroll.fullScroll(View.FOCUS_DOWN);
+                            binding.terminalText.append("\n\n" + device.name + "-># ");
+                            binding.terminalScroll.post(() -> {
+                                binding.terminalScroll.fullScroll(View.FOCUS_DOWN);
                             });
                         });
                     }
@@ -99,19 +84,19 @@ public class TerminalFragment extends Fragment implements FocusListener {
 
                     }
                 });
-                history.remove(terminalPromptText.getText().toString());
-                history.add(1, terminalPromptText.getText().toString());
+                history.remove(binding.terminalPromptText.getText().toString());
+                history.add(1, binding.terminalPromptText.getText().toString());
                 historyPos = 0;
-                terminalPromptText.setText("");
+                binding.terminalPromptText.setText("");
 
                 return true;
             }
             return false;
         });
-        terminalPromptText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        binding.terminalPromptText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                AutoCompleteTextView v = terminalPromptText;
+                AutoCompleteTextView v = binding.terminalPromptText;
                 v.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -122,34 +107,34 @@ public class TerminalFragment extends Fragment implements FocusListener {
                 v.setSelection(v.getText().length());
             }
         });
-        terminalPromptText.setOnClickListener((v) -> {
-            terminalPromptText.showDropDown();
+        binding.terminalPromptText.setOnClickListener((v) -> {
+            binding.terminalPromptText.showDropDown();
         });
-        terminalPromptText.setThreshold(0);
-        terminalPromptText.setAdapter(commandAutoCompleteAdapter);
+        binding.terminalPromptText.setThreshold(0);
+        binding.terminalPromptText.setAdapter(commandAutoCompleteAdapter);
 
-        terminalLeft.setOnClickListener(v -> {
-            terminalPromptText.setSelection(terminalPromptText.getSelectionStart()-1);
-        });
-
-        terminalRight.setOnClickListener(v -> {
-            terminalPromptText.setSelection(terminalPromptText.getSelectionStart()+1);
+        binding.terminalLeft.setOnClickListener(v -> {
+            binding.terminalPromptText.setSelection(binding.terminalPromptText.getSelectionStart()-1);
         });
 
-        terminalDown.setOnClickListener(v -> {
+        binding.terminalRight.setOnClickListener(v -> {
+            binding.terminalPromptText.setSelection(binding.terminalPromptText.getSelectionStart()+1);
+        });
+
+        binding.terminalDown.setOnClickListener(v -> {
             if(historyPos > 0) {
-                terminalPromptText.setText(history.get(--historyPos));
+                binding.terminalPromptText.setText(history.get(--historyPos));
             }
         });
 
-        terminalUp.setOnClickListener(v -> {
+        binding.terminalUp.setOnClickListener(v -> {
             if(historyPos < history.size()-1) {
-                terminalPromptText.setText(history.get(++historyPos));
+                binding.terminalPromptText.setText(history.get(++historyPos));
             }
         });
 
-        terminalColon.setOnClickListener(v -> {
-            terminalPromptText.append(":");
+        binding.terminalColon.setOnClickListener(v -> {
+            binding.terminalPromptText.append(":");
         });
     }
 

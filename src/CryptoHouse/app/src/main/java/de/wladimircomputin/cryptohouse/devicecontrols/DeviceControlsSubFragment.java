@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -13,8 +12,8 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import de.wladimircomputin.cryptohouse.R;
 import de.wladimircomputin.cryptohouse.assistant.FocusListener;
+import de.wladimircomputin.cryptohouse.databinding.FragmentDevicecontrolssubBinding;
 import de.wladimircomputin.cryptohouse.device.ICryptoDevice;
 
 public class DeviceControlsSubFragment extends Fragment implements FocusListener {
@@ -22,6 +21,8 @@ public class DeviceControlsSubFragment extends Fragment implements FocusListener
     Timer updateTimer;
     ArrayList<ICryptoDevice> devices;
     String name;
+
+    FragmentDevicecontrolssubBinding binding;
 
     public DeviceControlsSubFragment(String name, ArrayList<ICryptoDevice> devices){
         super();
@@ -37,13 +38,12 @@ public class DeviceControlsSubFragment extends Fragment implements FocusListener
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_devicecontrolssub, container, false);
-        LinearLayout mainView = view.findViewById(R.id.MainView);
+        binding = FragmentDevicecontrolssubBinding.inflate(inflater, container, false);
         for (ICryptoDevice device : devices){
-            ((ViewGroup) mainView).addView(device.getRootView());
+            (binding.MainView).addView(device.getRootView());
         }
 
-        return view;
+        return binding.getRoot();
     }
 
     @Override

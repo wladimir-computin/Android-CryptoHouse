@@ -14,14 +14,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import de.wladimircomputin.cryptohouse.R;
 import de.wladimircomputin.cryptohouse.assistant.FocusListener;
+import de.wladimircomputin.cryptohouse.databinding.ActivityDeviceSettingsBinding;
 import de.wladimircomputin.cryptohouse.devicemanager.DeviceManagerDevice;
 import de.wladimircomputin.cryptohouse.devicesettings.Terminal.TerminalActivity_V1;
 import de.wladimircomputin.cryptohouse.ui.PagerAdapterTitleProvider;
@@ -34,20 +33,15 @@ public class DeviceSettingsActivity extends AppCompatActivity {
     public DeviceManagerDevice device;
     public CryptCon cc;
     private DeviceSettingsPagerAdapter deviceSettingsPagerAdapter;
-    private ViewPager2 viewPager;
-    private TabLayout tabLayout;
-    private Toolbar toolbar;
+
+    ActivityDeviceSettingsBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_device_settings);
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        binding = ActivityDeviceSettingsBinding.inflate(getLayoutInflater());
+        setSupportActionBar(binding.toolbar.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        viewPager = findViewById(R.id.device_settings_pager);
-        tabLayout = findViewById(R.id.device_settings_tab_layout);
 
         Intent intent = getIntent();
         String id = intent.getStringExtra("id");
@@ -63,14 +57,14 @@ public class DeviceSettingsActivity extends AppCompatActivity {
 
         // Create adapter for ViewPager2
         deviceSettingsPagerAdapter = new DeviceSettingsPagerAdapter(this);
-        viewPager.setOffscreenPageLimit(10);
-        viewPager.setAdapter(deviceSettingsPagerAdapter);
+        binding.deviceSettingsPager.setOffscreenPageLimit(10);
+        binding.deviceSettingsPager.setAdapter(deviceSettingsPagerAdapter);
 
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+        new TabLayoutMediator(binding.deviceSettingsTabLayout, binding.deviceSettingsPager, (tab, position) -> {
             tab.setText(((PagerAdapterTitleProvider) deviceSettingsPagerAdapter).getTitle(position));
         }).attach();
 
-        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+        binding.deviceSettingsPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
@@ -92,6 +86,7 @@ public class DeviceSettingsActivity extends AppCompatActivity {
                 super.onPageScrollStateChanged(state);
             }
         });
+        setContentView(binding.getRoot());
     }
 
     @Override
