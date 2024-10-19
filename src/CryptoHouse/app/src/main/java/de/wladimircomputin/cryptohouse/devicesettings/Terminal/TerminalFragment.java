@@ -114,11 +114,11 @@ public class TerminalFragment extends Fragment implements FocusListener {
         binding.terminalPromptText.setAdapter(commandAutoCompleteAdapter);
 
         binding.terminalLeft.setOnClickListener(v -> {
-            binding.terminalPromptText.setSelection(binding.terminalPromptText.getSelectionStart()-1);
+            moveCursor(-1);
         });
 
         binding.terminalRight.setOnClickListener(v -> {
-            binding.terminalPromptText.setSelection(binding.terminalPromptText.getSelectionStart()+1);
+            moveCursor(+1);
         });
 
         binding.terminalDown.setOnClickListener(v -> {
@@ -179,6 +179,11 @@ public class TerminalFragment extends Fragment implements FocusListener {
 
             }
         });
+    }
+
+    public void moveCursor(int where){
+        int pos = Math.min(binding.terminalPromptText.getText().length(), Math.max(0, binding.terminalPromptText.getSelectionStart()+where));
+        binding.terminalPromptText.setSelection(pos);
     }
 
     @Override

@@ -10,10 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import de.wladimircomputin.cryptohouse.R;
 import de.wladimircomputin.cryptohouse.databinding.ActivityAssistantBinding;
 import de.wladimircomputin.cryptohouse.ui.PagerAdapterTitleProvider;
 

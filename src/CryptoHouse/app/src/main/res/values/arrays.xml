@@ -16,6 +16,7 @@
         <item>UranLight</item>
         <item>CryptoKamin</item>
         <item>PlantWater</item>
+        <item>DoorLock</item>
     </string-array>
 
     <string-array name="wifimodes">

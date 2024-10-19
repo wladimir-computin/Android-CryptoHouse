@@ -42,6 +42,7 @@ import de.wladimircomputin.cryptohouse.device.CryptoKamin;
 import de.wladimircomputin.cryptohouse.device.CryptoRollo;
 import de.wladimircomputin.cryptohouse.device.CryptoSML;
 import de.wladimircomputin.cryptohouse.device.CryptoTimer;
+import de.wladimircomputin.cryptohouse.device.DoorLock;
 import de.wladimircomputin.cryptohouse.device.ICryptoDevice;
 import de.wladimircomputin.cryptohouse.device.PlantWater;
 import de.wladimircomputin.cryptohouse.device.PlugSwitch;
@@ -145,6 +146,9 @@ public class DeviceControlsFragment extends Fragment {
                         break;
                     case "PlantWater":
                         device1 = new PlantWater(device, getContext());
+                        break;
+                    case "DoorLock":
+                        device1 = new DoorLock(device, getContext());
                         break;
                     case "divider":
                         break;
