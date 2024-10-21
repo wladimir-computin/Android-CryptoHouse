@@ -17,6 +17,7 @@
         <item>CryptoKamin</item>
         <item>PlantWater</item>
         <item>DoorLock</item>
+        <item>LightSwitch</item>
     </string-array>
 
     <string-array name="wifimodes">

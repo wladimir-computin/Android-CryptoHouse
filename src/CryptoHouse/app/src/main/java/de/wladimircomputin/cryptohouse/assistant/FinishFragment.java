@@ -46,13 +46,12 @@ public class FinishFragment extends Fragment implements FocusListener {
     // Inflate the view for the fragment based on layout XML
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_assistant_finish, container, false);
         binding = FragmentAssistantFinishBinding.inflate(inflater, container, false);
 
         binding.assistantFinishButton.setOnClickListener((v) -> {
             finishAssistant();
         });
-        return view;
+        return binding.getRoot();
     }
 
     @Override
